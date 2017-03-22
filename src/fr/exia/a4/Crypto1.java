@@ -8,24 +8,24 @@ public class Crypto1 {
 
 	public static void main(String[] args) {
 
-		// Le premier message
+		// First message
 		String s1 = "Od pdwulfh gh frgdjh gx whpsoh hvw, sdu oljqh: -wurlv -wurlv -txdwuh chur xq xq wurlv wurlv wurlv";
 
-		// Décrypté en césar
-		String s2 = Rot.cesar_decrypter(s1);
+		// Uncrypt
+		String s2 = new ROT().decryption(s1, 3);
 
 		// Debug
-		System.out.println("Originale : " + s1);
-		System.out.println("Décodée Cesar : " + s2);
+		System.out.println("Original data  : " + s1);
+		System.out.println("Uncrypted data : " + s2);
 		
 		// Voici la matrice obtenue
 		Matrix3f mat = new Matrix3f(
-				-3, -3, -4,
-			     0,  1,  1,
-				 3,  3,  3
+			-3, -3, -4,
+		     0,  1,  1,
+			 3,  3,  3
 		);
 		
-		// Le deuxième message
+		// Second message
 		String s3 = "gvqsxedxefhi qccadw qccadwqdwrgqbkrpkrpgsdgefwneci hfcxcp rvwdgkwuegvp gvqsxeqdwrgqpbkrpkrpgsdgefwneci mykphx";
 		
 		// Padding

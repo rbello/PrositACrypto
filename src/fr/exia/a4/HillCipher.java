@@ -4,16 +4,18 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Scanner;
+
+import vecmath.Matrix3f;
     
 /** 
  *  
  * This class is the implementation of encryption and decryption 
  *         using Hill cipher algorithm 
  *  
- */ 
-
-public class HillCipherLogic { 
-     static int[][] decrypt = new int[3][1]; 
+ */
+public class HillCipher implements ICipher<Matrix3f, Matrix3f> {
+     
+	static int[][] decrypt = new int[3][1]; 
      static int[][] a = new int[3][3]; 
      static int[][] b = new int[3][3]; 
      static int[][] mes = new int[3][1]; 
@@ -47,17 +49,19 @@ public class HillCipherLogic {
                System.out.print((char) (decrypt[i][0] % 26 + 97)); 
           } 
           System.out.print("\n"); 
-     } 
-/** 
- * This method actually takes the input from user or from console for encryption and decryption 
- * @throws IOException Only one checked exception as input is being taken at runtime from console 
- */ 
+     }
+     
+	/** 
+	 * This method actually takes the input from user or from console for encryption and decryption 
+	 * @throws IOException Only one checked exception as input is being taken at runtime from console 
+	 */ 
      public static void getKeys() throws IOException { 
-          System.out 
-                    .println("Enter 3x3 matrix for key (It should be inversible): "); 
-          for (int i = 0; i < 3; i++) 
-               for (int j = 0; j < 3; j++) 
-                    a[i][j] = sc.nextInt(); 
+          System.out.println("Enter 3x3 matrix for key (It should be inversible): "); 
+          for (int i = 0; i < 3; i++) {
+        	  for (int j = 0; j < 3; j++) {
+        		  a[i][j] = sc.nextInt();
+        	  }
+          }
           System.out.print("\nEnter a 3 letter string: "); 
           String msg = br.readLine(); 
           for (int i = 0; i < 3; i++) 
@@ -104,5 +108,17 @@ public class HillCipherLogic {
                     System.out.print(b[i][j] + " "); 
                System.out.print("\n"); 
           } 
-     } 
+     }
+
+	@Override
+	public Matrix3f encryption(String data, Matrix3f key) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String decryption(Matrix3f data, Matrix3f key) {
+		// TODO Auto-generated method stub
+		return null;
+	} 
 } 

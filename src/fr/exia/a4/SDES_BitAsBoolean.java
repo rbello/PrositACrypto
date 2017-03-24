@@ -7,13 +7,21 @@ public class SDES_BitAsBoolean implements ICipher<String, String> {
 
 	@Override
 	public String encryption(String data, String key) {
-
+		
+		// On convertir la chaîne de données en tableau de boolean (des bits pour simplifier)
+		boolean[] bits_block = byte2bits(data);
+		
 		// On convertit la chaîne de caractère de la clé en tableau de boolean (des bits pour simplifier)
 		boolean[] masterKey = char2bin(key);
 		if (masterKey.length != 10) {
 			throw new IllegalArgumentException("Key must have a length of 10 chars");
 		}
-        
+		
+		return null;
+	}
+
+	private boolean[] byte2bits(String data) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -177,6 +185,56 @@ public class SDES_BitAsBoolean implements ICipher<String, String> {
         	result[i] = ((a[i] && b[i]) || (!a[i] && !b[i])) ? false : true;
         }
         return result;
+    }
+    
+    /**
+     * Renvoie un tableau de booleans (assimilables à des bits) correspondant
+     * aux valeurs des bits de l'octet passé en paramètre.
+     * 
+     * @param block
+     * @return
+     */
+    public static boolean[] byte2bits(char block)
+    {
+    	boolean result[] = new boolean[8];
+        int c = block;
+        // On parcours les 8 bits en partant des bits de poids forts (la gauche)
+        for (int p = 7, i = 0; p >= 0; p--, i++) {
+        	// Si le bit actuel est à 1
+            if (c - Math.pow(2, p) >= 0)
+            {
+                result[i] = true;
+                // On décalle au bit précédent (toujours en partant de la gauche)
+                c -= Math.pow(2, p);
+            }   
+            else result[i] = false;
+        }
+        return result;
+    }
+    
+    /**
+     * Renvoie une chaîne de caractère composée de 0 et de 1 correspondant aux
+     * valeurs des bits de l'octet passé en paramètre.
+     * 
+     * @param block
+     * @return
+     */
+    public static String char2binstr(char block)
+    {
+        String ret = "";
+        int c = block;
+        // On parcours les 8 bits en partant des bits de poids forts (la gauche)
+        for (int p = 7; p >= 0; p--) {
+        	// Si le bit actuel est à 1
+            if (c - Math.pow(2, p) >= 0)
+            {
+                ret += "1";
+                // On décalle au bit précédent (toujours en partant de la gauche)
+                c -= Math.pow(2, p);
+            }   
+            else ret += "0";
+        }
+        return ret;
     }
 
 	@Override

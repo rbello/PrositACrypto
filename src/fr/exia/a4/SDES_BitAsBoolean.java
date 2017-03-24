@@ -15,7 +15,7 @@ public class SDES_BitAsBoolean implements ICipher<String, String> {
 		return null;
 	}
 
-	public boolean char2bin(char bit)
+	public static boolean char2bin(char bit)
     {
         if (bit == '0') return false;
         else if (bit == '1') return true;
@@ -29,7 +29,7 @@ public class SDES_BitAsBoolean implements ICipher<String, String> {
 	 * @param key
 	 * @return
 	 */
-    boolean[] P10(boolean[] key)
+    public static boolean[] P10(boolean[] key)
     {
         // 0 1 2 3 4 5 6 7 8 9
         // 2 4 1 6 3 9 0 8 7 5
@@ -47,7 +47,7 @@ public class SDES_BitAsBoolean implements ICipher<String, String> {
         return permutatedArray;
     }
     
-    boolean[] Circular_left_shift(boolean[] key, int bits)
+    public static boolean[] circularLeftShift(boolean[] key, int bits)
     {
         boolean[] shifted = new boolean[key.length];
         int index = 0;

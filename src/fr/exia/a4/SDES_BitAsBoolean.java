@@ -66,21 +66,7 @@ public class SDES_BitAsBoolean implements ICipher<String, String> {
         return keys;
     }
     
-	public static List<boolean[]> splitBlock(boolean[] block) {
-		
-		// On prépare deux tableaux
-		List<boolean[]> splited = new ArrayList<>(2);
-        splited.add(new boolean[block.length / 2]);
-        splited.add(new boolean[block.length / 2]);
-        
-        // On split en deux
-        for(int i = 0, middle = block.length / 2; i < block.length; i++)
-        {
-        	// TODO Vérifier le bon fonctionnement du ceil
-            splited.get(i >= middle ? 0 : 1)[i] = block[i];
-        }
-        return splited;
-	}
+	
 	
 	public static boolean[] IP(boolean[] plainText) {
 		// Indice dans key : 1 2 3 4 5 6 7 8
@@ -173,68 +159,59 @@ public class SDES_BitAsBoolean implements ICipher<String, String> {
         return permutatedArray;
     }
     
-    public static boolean[] xor(boolean[] a, boolean[] b)
+    
+    
+    /**
+     * TODO Doc
+     * 
+     * @param part1
+     * @param part2
+     * @return
+     */
+    public static boolean[] P4(boolean[] part1, boolean[] part2)
     {
-    	// On fabrique un tableau de la taille maximale de deux tableaux a ou b
-    	// Initialement, toutes les valeurs valent FALSE
-        boolean[] result = new boolean[Math.max(a.length, b.length)];
+    	// Indice dans key : 1 2 3 4
+        // Permutation     : 0,1 1,1 1,0 0,0
+    	boolean[] permutatedArray = new boolean[4];
+        permutatedArray[0] = part1[1];// 0,1
+        permutatedArray[1] = part2[1];// 1,1
+        permutatedArray[2] = part2[0];// 1,0
+        permutatedArray[3] = part1[0];// 0,0
+        return permutatedArray;
+    }
+    
+    
+
+    /**
+     * 
+     * @param right
+     * @param sk sous-clé
+     * @return
+     */
+    public static boolean[] F(boolean[] right, boolean[] sk)
+    {
+    	// On applique ep sur right
+    	boolean[] a = EP(right);
+    	
+    	// On effectue un OU exclusif entre le résultat obtenu et la sous-clé sk
+    	boolean[] b = BitAsBooleanUtils.xor(a, sk);
+    	
+    	// On divise 
+    	List<boolean[]> temp = splitBlock(b);
+    	
+    	// On effectue les opérations des sand-boxes sur chaque moitié obtenue
+    	sandBoxes(temp.get(0));
         
-        // On parcours les deux tableaux jusqu'à la fin du plus petit
-        for (int i = 0, min = Math.min(a.length, b.length); i < min; i++) 
-        {
-        	result[i] = ((a[i] && b[i]) || (!a[i] && !b[i])) ? false : true;
-        }
-        return result;
     }
     
-    /**
-     * Renvoie un tableau de booleans (assimilables à des bits) correspondant
-     * aux valeurs des bits de l'octet passé en paramètre.
-     * 
-     * @param block
-     * @return
-     */
-    public static boolean[] byte2bits(char block)
+    public static boolean[] getSandBoxes(boolean[] block, boolean[][][] sandBox)
     {
-    	boolean result[] = new boolean[8];
-        int c = block;
-        // On parcours les 8 bits en partant des bits de poids forts (la gauche)
-        for (int p = 7, i = 0; p >= 0; p--, i++) {
-        	// Si le bit actuel est à 1
-            if (c - Math.pow(2, p) >= 0)
-            {
-                result[i] = true;
-                // On décalle au bit précédent (toujours en partant de la gauche)
-                c -= Math.pow(2, p);
-            }   
-            else result[i] = false;
-        }
-        return result;
+        return sandBox[binstr2char(bin2str(block[0]) + bin2str(block[3]))][binstr2char(bin2str(block[1]) + bin2str(block[2]))];
     }
     
-    /**
-     * Renvoie une chaîne de caractère composée de 0 et de 1 correspondant aux
-     * valeurs des bits de l'octet passé en paramètre.
-     * 
-     * @param block
-     * @return
-     */
-    public static String char2binstr(char block)
+    public static String bin2str(boolean value)
     {
-        String ret = "";
-        int c = block;
-        // On parcours les 8 bits en partant des bits de poids forts (la gauche)
-        for (int p = 7; p >= 0; p--) {
-        	// Si le bit actuel est à 1
-            if (c - Math.pow(2, p) >= 0)
-            {
-                ret += "1";
-                // On décalle au bit précédent (toujours en partant de la gauche)
-                c -= Math.pow(2, p);
-            }   
-            else ret += "0";
-        }
-        return ret;
+    	return value ? "1" : "0";
     }
 
 	@Override

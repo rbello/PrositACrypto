@@ -1,50 +1,11 @@
 package fr.exia.a4;
 
-public class Rot {
+public class ROT implements ICipher<Integer, String> {
 	
 	static final char[] ALPHABET = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
 		'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
 		'v', 'w', 'x', 'y', 'z' };
 	
-	public static String cesar_crypter(String text) {
-		return crypter(3, text);
-	}
-	
-	public static String cesar_decrypter(String text) {
-		return decrypter(3, text);
-	}
-	
-	public static String crypter(int n, String text) {
-		// On est obligé de ramener les caractères dans l'alphabet
-		text = text.toLowerCase();
-
-		// On convertit le string en un tableau de char
-		char[] charSIn = text.toCharArray();
-		
-		// Variable de sortie
-		String out = "";
-		
-		// On prend chaque lettre du texte d'entrée  
-		for (int i = 0; i < charSIn.length; i++) {
-			
-			// On prend sa position actuelle dans l'alphabet
-			int pos1 = ordInAlphabet(charSIn[i]);
-			// On calcule sa nouvelle position en fonction de n
-			int pos2 = newPos(pos1, n);
-			// Si -1, c'est que ce n'est pas une lettre, on laisse le même caractère
-			if (pos2 == -1)
-				out += charSIn[i];
-			else
-				out += ALPHABET[pos2];
-		}
-		
-		return out;
-	}
-
-	public static String decrypter(int n, String text) {
-		return crypter(-n, text);
-	}
-
 	/**
 	 * Renvoie la position du caractere dans le tableau Et -1 si il n'est pas
 	 * dans le tableau
@@ -87,6 +48,30 @@ public class Rot {
 			i++;
 		}
 		return pos2;
+	}
+
+	@Override
+	public String encryption(String data, Integer key) {
+		char[] charSIn = data.toLowerCase().toCharArray();
+		String out = "";
+		for (int i = 0; i < charSIn.length; i++) {
+			// Get char position in the alphabet
+			int pos1 = ordInAlphabet(charSIn[i]);
+			// 
+			int pos2 = newPos(pos1, key);
+			// Not a chat
+			if (pos2 == -1)
+				out += charSIn[i];
+			else
+				out += ALPHABET[pos2];
+		}
+		
+		return out;
+	}
+
+	@Override
+	public String decryption(String data, Integer key) {
+		return encryption(data, -key);
 	}
 
 }

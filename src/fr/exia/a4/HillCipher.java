@@ -3,8 +3,12 @@ package fr.exia.a4;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.Normalizer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
+import vecmath.Matrix3d;
 import vecmath.Matrix3f;
     
 /** 
@@ -12,9 +16,14 @@ import vecmath.Matrix3f;
  * This class is the implementation of encryption and decryption 
  *         using Hill cipher algorithm 
  *  
+ *  https://github.com/jester155/HillCipher/blob/master/src/Cipher/HillCipher.java
+ *  or with lib
+ *  https://github.com/tstevens/Hill-Cipher/blob/master/Main.java
  */
-public class HillCipher implements ICipher<Matrix3f, Matrix3f> {
-     
+public abstract class HillCipher<K, C> implements ICipher<K, C> {
+
+	private static final char PADDING_CHAR = 'x';
+	
 	static int[][] decrypt = new int[3][1]; 
      static int[][] a = new int[3][3]; 
      static int[][] b = new int[3][3]; 
@@ -22,9 +31,27 @@ public class HillCipher implements ICipher<Matrix3f, Matrix3f> {
      static int[][] res = new int[3][1]; 
      static BufferedReader br = new BufferedReader(new InputStreamReader( 
                System.in)); 
-     static Scanner sc = new Scanner(System.in); 
+     static Scanner sc = new Scanner(System.in);
+     
+     static char[] ALPHABET = new char[26];
+     
+     
+     /**
+ 	 * Initializes the English ASCII alphabet to an array.
+ 	 */
+ 	static {
+ 		for (int i = 0; i < 26; i++) {
+ 			ALPHABET[i] = (char) (97 + i);
+ 		}
+ 	}
+     
+	protected int N;
+	
+    public HillCipher(int n) {
+    	 this.N = n;
+	}
 
-     public static void main(String[] args) throws IOException { 
+	public static void main(String[] args) throws IOException { 
           getKeys(); 
           for (int i = 0; i < 3; i++) 
                for (int j = 0; j < 1; j++) 
@@ -109,16 +136,95 @@ public class HillCipher implements ICipher<Matrix3f, Matrix3f> {
                System.out.print("\n"); 
           } 
      }
-
-	@Override
-	public Matrix3f encryption(String data, Matrix3f key) {
-		// TODO Auto-generated method stub
-		return null;
+     
+     /**
+      * Fills the plain text string with x to match the matrix requirements
+      */
+     public String fillStringPadding(String data) {
+    	 while (data.length() % N != 0)
+    		 data += PADDING_CHAR;
+    	 return data;
 	}
 
-	@Override
-	public String decryption(Matrix3f data, Matrix3f key) {
-		// TODO Auto-generated method stub
-		return null;
-	} 
+     /**
+      * TODO Doc
+      * @param plainText
+      * @return
+      */
+ 	public static final String normalizeText(String plainText) {
+		return Normalizer.normalize(plainText.toLowerCase(), Normalizer.Form.NFD).replaceAll("[^a-zA-Z]", ""); 
+	}
+ 	
+ 	/**
+	 * Converts a character to a number (0-25)
+	 * @param c
+	 * @return A number 0-25
+	 */
+	public static int toNumber(char c) {
+		for (int i = 0; i < ALPHABET.length; i++) {
+			if (c == ALPHABET[i]) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	/**
+	 * Converts a number to a character with a modulo of 26. (a-z)
+	 * @param nbr
+	 * @return ASCII Character a-z
+	 */
+	public static char toCharacter(int nbr) {
+		int x = nbr;
+		int t = 0;
+		if (nbr > 25) {
+			x /= 26;
+			x *= 26;
+			t = nbr - x;
+		}
+		else {
+			t = nbr;
+		}
+		return ALPHABET[t];
+	}
+
+	/*
+	public final static List<Matrix3f> splitToMatrix3x3(String plainText) {
+        int splitValue = 3;
+        List<Matrix3f> chunks = new ArrayList<Matrix3f>();
+        
+            for (int i = 0, sub = splitValue; sub <= plainText.length(); i += splitValue, sub += splitValue) {
+                char[] chunk = plainText.substring(i, sub).toCharArray();
+                
+                new matrix3f
+                
+                
+                
+                DoubleMatrix temp = stringToMatrix(chunk);
+                chunks.add(temp);
+//             TODO Parse non even length strings
+//                if(i+splitValue > plainText.length()){
+//                    if (splitValue == 3){
+//                        if((plainText.length() - sub) == 2){
+//                            char[] fill = {plainText.substring(sub, sub+1).toCharArray()[0], 'A', 'A'};
+//                            temp = stringToMatrix(fill);
+//                        } else {
+//                            char[] fill = {plainText.substring(i, sub+2).toCharArray()[0], 'A'};
+//                            temp = stringToMatrix(fill);
+//                        }
+//                        chunks.add(temp);
+//                    } else {
+//                        char[] fill = {plainText.substring(i, sub).toCharArray()[0], 'A'};
+//                        temp = stringToMatrix(fill);
+//                        chunks.add(temp);
+//                    }
+//                }
+            }
+            return chunks;
+        } else {
+            return null;
+        }
+
+
+}*/
 } 

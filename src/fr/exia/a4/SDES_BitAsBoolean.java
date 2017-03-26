@@ -9,10 +9,10 @@ public class SDES_BitAsBoolean implements ICipher<String, String> {
 	public String encryption(String data, String key) {
 		
 		// On convertir la chaîne de données en tableau de boolean (des bits pour simplifier)
-		boolean[] bits_block = byte2bits(data);
+		boolean[] bits_block = BitAsBooleanUtils.byte2bits(data);
 		
 		// On convertit la chaîne de caractère de la clé en tableau de boolean (des bits pour simplifier)
-		boolean[] masterKey = char2bin(key);
+		boolean[] masterKey = BitAsBooleanUtils.char2bin(key);
 		if (masterKey.length != 10) {
 			throw new IllegalArgumentException("Key must have a length of 10 chars");
 		}
@@ -20,48 +20,20 @@ public class SDES_BitAsBoolean implements ICipher<String, String> {
 		return null;
 	}
 
-	private boolean[] byte2bits(String data) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 
-	private static boolean[] char2bin(String key) {
-		boolean[] output = new boolean[key.length()];
-        for (int i = 0; i < key.length(); i++)
-        {
-        	output[i] = char2bin(key.charAt(i));
-        }
-        return output;
-	}
 
-	public static boolean char2bin(char bit)
-    {
-        if (bit == '0') return false;
-        else if (bit == '1') return true;
-        else throw new RuntimeException("Key must be in binary string format [0,1]");
-    }
-    
-    public static boolean[] circularLeftShift(boolean[] key, int bits)
-    {
-        boolean[] shifted = new boolean[key.length];
-        for (int index = 0, i = bits; index < key.length; i++)
-        {
-            shifted[index++] = key[i % key.length]; 
-        }
-        return shifted;
-    }
-    
     public static List<boolean[]> generateKeys(boolean[] masterKey)
     {
     	// Tableau qui va contenir K1 et K2
         List<boolean[]> keys = new ArrayList<>(2);
         
         // On applique P10 et on sépare en deux tableaux de 5 bits
-        List<boolean[]> temp = splitBlock(P10(masterKey));
+        List<boolean[]> temp = BitAsBooleanUtils.splitBlock(P10(masterKey));
         
         // On applique P8 sur 
-        keys.add(P8(circularLeftShift(temp.get(0), 1), circularLeftShift(temp.get(1), 1)));
-        keys.add(P8(circularLeftShift(temp.get(0), 3), circularLeftShift(temp.get(1), 3)));
+        keys.add(P8(BitAsBooleanUtils.circularLeftShift(temp.get(0), 1), BitAsBooleanUtils.circularLeftShift(temp.get(1), 1)));
+        keys.add(P8(BitAsBooleanUtils.circularLeftShift(temp.get(0), 3), BitAsBooleanUtils.circularLeftShift(temp.get(1), 3)));
         
         return keys;
     }
@@ -197,7 +169,7 @@ public class SDES_BitAsBoolean implements ICipher<String, String> {
     	boolean[] b = BitAsBooleanUtils.xor(a, sk);
     	
     	// On divise 
-    	List<boolean[]> temp = splitBlock(b);
+    	List<boolean[]> temp = BitAsBooleanUtils.splitBlock(b);
     	
     	// On effectue les opérations des sand-boxes sur chaque moitié obtenue
     	sandBoxes(temp.get(0));
@@ -206,7 +178,8 @@ public class SDES_BitAsBoolean implements ICipher<String, String> {
     
     public static boolean[] getSandBoxes(boolean[] block, boolean[][][] sandBox)
     {
-        return sandBox[binstr2char(bin2str(block[0]) + bin2str(block[3]))][binstr2char(bin2str(block[1]) + bin2str(block[2]))];
+        return sandBox[BitAsBooleanUtils.binstr2char(bin2str(block[0]) + bin2str(block[3]))]
+        		[BitAsBooleanUtils.binstr2char(bin2str(block[1]) + bin2str(block[2]))];
     }
     
     public static String bin2str(boolean value)

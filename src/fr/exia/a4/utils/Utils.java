@@ -1,10 +1,10 @@
-package fr.exia.a4;
+package fr.exia.a4.utils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BitAsBooleanUtils {
-	
+public class Utils {
+
 	public static boolean[] byte2bits(String data) {
 		// TODO Auto-generated method stub
 		return null;
@@ -23,6 +23,21 @@ public class BitAsBooleanUtils {
 		return ret;
 	}
 
+	public static int[] toCharArray(String str) {
+		// On en fait un tableau, et on ordonne les caractères par rapport à
+		// leurs positions dans l'alphabet
+		int[] ret = new int[str.length()];
+		int i = 0;
+		for (char c : str.toCharArray()) {
+			ret[i++] = c - 97;
+		}
+		return ret;
+	}
+
+	public static String bin2str(boolean value) {
+		return value ? "1" : "0";
+	}
+
 	public static boolean[] xor(boolean[] a, boolean[] b) {
 		// On fabrique un tableau de la taille maximale de deux tableaux a ou b
 		// Initialement, toutes les valeurs valent FALSE
@@ -34,32 +49,31 @@ public class BitAsBooleanUtils {
 		}
 		return result;
 	}
-	
+
 	public static boolean[] char2bin(String key) {
 		boolean[] output = new boolean[key.length()];
-        for (int i = 0; i < key.length(); i++)
-        {
-        	output[i] = char2bin(key.charAt(i));
-        }
-        return output;
+		for (int i = 0; i < key.length(); i++) {
+			output[i] = char2bin(key.charAt(i));
+		}
+		return output;
 	}
 
-	public static boolean char2bin(char bit)
-    {
-        if (bit == '0') return false;
-        else if (bit == '1') return true;
-        else throw new RuntimeException("Key must be in binary string format [0,1]");
-    }
-    
-    public static boolean[] circularLeftShift(boolean[] key, int bits)
-    {
-        boolean[] shifted = new boolean[key.length];
-        for (int index = 0, i = bits; index < key.length; i++)
-        {
-            shifted[index++] = key[i % key.length]; 
-        }
-        return shifted;
-    }
+	public static boolean char2bin(char bit) {
+		if (bit == '0')
+			return false;
+		else if (bit == '1')
+			return true;
+		else
+			throw new RuntimeException("Key must be in binary string format [0,1]");
+	}
+
+	public static boolean[] circularLeftShift(boolean[] key, int bits) {
+		boolean[] shifted = new boolean[key.length];
+		for (int index = 0, i = bits; index < key.length; i++) {
+			shifted[index++] = key[i % key.length];
+		}
+		return shifted;
+	}
 
 	/**
 	 * Renvoie un tableau de booleans (assimilables � des bits) correspondant

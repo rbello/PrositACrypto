@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import fr.exia.a4.utils.ICipher;
 import vecmath.Matrix3d;
 import vecmath.Matrix3f;
     

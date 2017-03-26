@@ -1,4 +1,4 @@
-package fr.exia.a4;
+package fr.exia.a4.utils;
 
 /**
  * 

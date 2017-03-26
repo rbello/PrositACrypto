@@ -1,5 +1,7 @@
 package fr.exia.a4;
 
+import fr.exia.a4.utils.ICipher;
+
 public class ROT implements ICipher<Integer, String> {
 	
 	static final char[] ALPHABET = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',

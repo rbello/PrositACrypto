@@ -1,5 +1,7 @@
-package fr.exia.a4;
+package fr.exia.a4.utils;
 
+import fr.exia.a4.HillCipher3x3;
+import fr.exia.a4.ROT;
 import vecmath.Matrix3f;
 
 public class TestCase {

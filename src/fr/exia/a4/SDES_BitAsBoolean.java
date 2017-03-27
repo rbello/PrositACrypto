@@ -22,16 +22,16 @@ public class SDES_BitAsBoolean implements ICipher<String, String> {
 		b0[1] = false;
 
 		boolean b1[] = new boolean[2];
-		b0[0] = false;
-		b0[1] = true;
+		b1[0] = false;
+		b1[1] = true;
 
 		boolean b2[] = new boolean[2];
-		b0[0] = true;
-		b0[1] = false;
+		b2[0] = true;
+		b2[1] = false;
 
 		boolean b3[] = new boolean[2];
-		b0[0] = true;
-		b0[1] = true;
+		b3[0] = true;
+		b3[1] = true;
 
 		s_box1[0][0] = b1;
 		s_box1[0][1] = b0;
@@ -78,7 +78,7 @@ public class SDES_BitAsBoolean implements ICipher<String, String> {
 	@Override
 	public String encryption(String data, String key) {
 
-		// On convertit la chaîne de caractère de la clé en tableau de boolean
+		// On convertit la chaÃ®ne de caractÃ¨re de la clÃ© en tableau de boolean
 		// (des bits pour simplifier)
 		boolean[] masterKey = Utils.char2bin(key);
 		if (masterKey.length != 10) {
@@ -106,7 +106,7 @@ public class SDES_BitAsBoolean implements ICipher<String, String> {
 	
 	@Override
 	public String decryption(String data, String key) {
-		// On convertit la chaîne de caractère de la clé en tableau de boolean
+		// On convertit la chaÃ®ne de caractÃ¨re de la clÃ© en tableau de boolean
 		// (des bits pour simplifier)
 		boolean[] masterKey = Utils.char2bin(key);
 		if (masterKey.length != 10) {
@@ -136,7 +136,7 @@ public class SDES_BitAsBoolean implements ICipher<String, String> {
 		// Tableau qui va contenir K1 et K2
 		List<boolean[]> keys = new ArrayList<>(2);
 
-		// On applique P10 et on sépare en deux tableaux de 5 bits
+		// On applique P10 et on sÃ©pare en deux tableaux de 5 bits
 		List<boolean[]> temp = Utils.splitBlock(P10(masterKey));
 
 		// On applique P8
@@ -250,17 +250,17 @@ public class SDES_BitAsBoolean implements ICipher<String, String> {
 		// On applique ep sur right
 		boolean[] a = EP(right);
 
-		// On effectue un OU exclusif entre le résultat obtenu et la sous-clé sk
+		// On effectue un OU exclusif entre le rÃ©sultat obtenu et la sous-clÃ© sk
 		boolean[] b = Utils.xor(a, sk);
 
 		// On divise
 		List<boolean[]> temp = Utils.splitBlock(b);
 
-		// On effectue les opérations des sand-boxes sur chaque moitié obtenue
+		// On effectue les opÃ©rations des sand-boxes sur chaque moitiÃ© obtenue
 		boolean[] sb1 = getSandBoxes(temp.get(0), s_box1);
 		boolean[] sb2 = getSandBoxes(temp.get(0), s_box2);
 
-		// On applique P4 et on renvoie le résultat
+		// On applique P4 et on renvoie le rÃ©sultat
 		return P4(sb1, sb2);
 	}
 

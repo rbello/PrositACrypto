@@ -1,13 +1,30 @@
 package fr.exia.a4.utils;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Utils {
 
-	public static boolean[] byte2bits(String data) {
-		// TODO Auto-generated method stub
-		return null;
+	public static char bits2byte(boolean block[]) {
+		String result = "";
+		for (int i = 0; i < block.length; i++) {
+			result += bin2str(block[i]);
+		}
+		return binstr2char(result);
+	}
+
+	public static boolean[] switchBits(boolean[] input) {
+		boolean[] switched = new boolean[8];
+		int index = 0;
+		for (int i = 4; index < input.length; i++) {
+			switched[index++] = input[i % input.length];
+		}
+		return switched;
 	}
 
 	public static char binstr2char(String str) {
@@ -131,11 +148,47 @@ public class Utils {
 		splited.add(new boolean[block.length / 2]);
 
 		// On split en deux
-		for (int i = 0, middle = block.length / 2; i < block.length; i++) {
-			// TODO Vérifier le bon fonctionnement du ceil
-			splited.get(i >= middle ? 0 : 1)[i] = block[i];
+		int index = 0;
+		for (int i = 0, middle = block.length / 2; i < middle; i++) {
+			splited.get(0)[i] = block[index++];
+		}
+		for (int i = 0, middle = block.length / 2; i < middle; i++) {
+			splited.get(1)[i] = block[index++];
 		}
 		return splited;
 	}
 
+	public static String readAllFile(String path, String charset) {
+		try {
+			return new String(Files.readAllBytes(Paths.get("file")), StandardCharsets.UTF_8);
+//			File file = new File(path);
+//			FileInputStream fis = new FileInputStream(file);
+//			byte[] data = new byte[(int) file.length()];
+//			fis.read(data);
+//			fis.close();
+//			return new String(data, charset);
+		}
+		catch (Throwable t) {
+			return null;
+		}
+	}
+	
+	public static String readAllLocalFile(String path) {
+		try {
+			return readAllFile(Utils.class.getResource("../../../../" + path).toURI());
+		}
+		catch (URISyntaxException e) {
+			return null;
+		}
+	}
+	
+	public static String readAllFile(URI path) {
+		try {
+			return new String(Files.readAllBytes(Paths.get(path)));
+		}
+		catch (Throwable t) {
+			t.printStackTrace();
+			return null;
+		}
+	}
 }

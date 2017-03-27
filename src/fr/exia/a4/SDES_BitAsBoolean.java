@@ -16,6 +16,7 @@ public class SDES_BitAsBoolean implements ICipher<String, String> {
 	}
 
 	private void initSandbox() {
+		
 		boolean b0[] = new boolean[2];
 		b0[0] = false;
 		b0[1] = false;
@@ -77,42 +78,86 @@ public class SDES_BitAsBoolean implements ICipher<String, String> {
 	@Override
 	public String encryption(String data, String key) {
 
-		// On convertir la chaîne de données en tableau de boolean (des bits
-		// pour simplifier)
-		boolean[] bits_block = Utils.byte2bits(data);
-
 		// On convertit la chaîne de caractère de la clé en tableau de boolean
 		// (des bits pour simplifier)
 		boolean[] masterKey = Utils.char2bin(key);
 		if (masterKey.length != 10) {
 			throw new IllegalArgumentException("Key must have a length of 10 chars");
 		}
-		
-		//ciphertext = IP-1( fK2 ( SW (fK1 (IP (plaintext)))))
-		
-		
 
-		return null;
+		// Generate sub-keys
+		List<boolean[]> keys = generateKeys(masterKey);
+		boolean[] k1 = keys.get(0);
+		boolean[] k2 = keys.get(1);
+
+		// Fetch chars one by one
+		StringBuilder ciphertext = new StringBuilder();
+		for (int i = 0; i < data.length(); i++) {
+			boolean[] b = Utils.byte2bits(data.charAt(i));
+			// ciphertext = IP-1(FK(SW(FK(IP(plaintext)))))
+			char c = (char) Utils.bits2byte(reverseIP(FK(Utils.switchBits(FK(IP(b), k1)), k2)));
+			ciphertext.append(c);
+		}
+
+		// Return data as a string
+		return ciphertext.toString();
+
 	}
 	
-	private char encryption(boolean[] bits_block, boolean[] masterKey) {
-        List<boolean[]> keys = generateKeys(masterKey);
-        //ciphertext = IP-1(FK(Switch(FK(IP(plaintext)))))
-        return 0;
+	@Override
+	public String decryption(String data, String key) {
+		// On convertit la chaîne de caractère de la clé en tableau de boolean
+		// (des bits pour simplifier)
+		boolean[] masterKey = Utils.char2bin(key);
+		if (masterKey.length != 10) {
+			throw new IllegalArgumentException("Key must have a length of 10 chars");
+		}
+
+		// Generate sub-keys
+		List<boolean[]> keys = generateKeys(masterKey);
+		boolean[] k1 = keys.get(0);
+		boolean[] k2 = keys.get(1);
+
+		// Fetch chars one by one
+		StringBuilder ciphertext = new StringBuilder();
+		for (int i = 0; i < data.length(); i++) {
+			boolean[] b = Utils.byte2bits(data.charAt(i));
+			// plaintext = IP-1(FK(SW(FK(IP(ciphertext)))))
+			char c = (char) Utils.bits2byte(reverseIP(FK(Utils.switchBits(FK(IP(b), k2)), k1)));
+			ciphertext.append(c);
+		}
+
+		// Return data as a string
+		return ciphertext.toString();
 	}
 
 	public static List<boolean[]> generateKeys(boolean[] masterKey) {
+
 		// Tableau qui va contenir K1 et K2
 		List<boolean[]> keys = new ArrayList<>(2);
 
 		// On applique P10 et on sépare en deux tableaux de 5 bits
 		List<boolean[]> temp = Utils.splitBlock(P10(masterKey));
 
-		// On applique P8 sur
+		// On applique P8
 		keys.add(P8(Utils.circularLeftShift(temp.get(0), 1), Utils.circularLeftShift(temp.get(1), 1)));
 		keys.add(P8(Utils.circularLeftShift(temp.get(0), 3), Utils.circularLeftShift(temp.get(1), 3)));
 
 		return keys;
+	}
+
+	public boolean[] FK(boolean[] IP, boolean[] key) {
+		List<boolean[]> temp = Utils.splitBlock(IP);
+		boolean[] Left = Utils.xor(temp.get(0), F(temp.get(1), key));
+		boolean[] joined = new boolean[8];
+		int index = 0;
+		for (int i = 0; i < 4; i++) {
+			joined[index++] = Left[i];
+		}
+		for (int i = 0; i < 4; i++) {
+			joined[index++] = temp.get(1)[i];
+		}
+		return joined;
 	}
 
 	public static boolean[] IP(boolean[] plainText) {
@@ -145,13 +190,6 @@ public class SDES_BitAsBoolean implements ICipher<String, String> {
 		return permutatedArray;
 	}
 
-	/**
-	 * La fonction de permutation est définie telle que : P10(k1, k2, k3, k4,
-	 * k5, k6, k7, k8, k9, k10) = (k3, k5, k2, k7, k4, k10, k1, k9, k8, k6)
-	 * 
-	 * @param key
-	 * @return
-	 */
 	public static boolean[] P10(boolean[] key) {
 		// Indice dans key : 1 2 3 4 5 6 7 8 9 10
 		// Permutation : 3 5 2 7 4 10 1 9 8 6
@@ -184,12 +222,6 @@ public class SDES_BitAsBoolean implements ICipher<String, String> {
 		return permutatedArray;
 	}
 
-	/**
-	 * E/P (n1, n2, n3, n4) = (n4, n1, n2, n3, n2, n3, n4, n1)
-	 * 
-	 * @param input
-	 * @return
-	 */
 	public static boolean[] EP(boolean[] input) {
 		boolean[] permutatedArray = new boolean[8];
 		permutatedArray[0] = input[3];
@@ -203,13 +235,6 @@ public class SDES_BitAsBoolean implements ICipher<String, String> {
 		return permutatedArray;
 	}
 
-	/**
-	 * TODO Doc
-	 * 
-	 * @param part1
-	 * @param part2
-	 * @return
-	 */
 	public static boolean[] P4(boolean[] part1, boolean[] part2) {
 		// Indice dans key : 1 2 3 4
 		// Permutation : 0,1 1,1 1,0 0,0
@@ -221,13 +246,6 @@ public class SDES_BitAsBoolean implements ICipher<String, String> {
 		return permutatedArray;
 	}
 
-	/**
-	 * 
-	 * @param right
-	 * @param sk
-	 *            sous-clé
-	 * @return
-	 */
 	public boolean[] F(boolean[] right, boolean[] sk) {
 		// On applique ep sur right
 		boolean[] a = EP(right);
@@ -247,14 +265,8 @@ public class SDES_BitAsBoolean implements ICipher<String, String> {
 	}
 
 	public static boolean[] getSandBoxes(boolean[] block, boolean[][][] sandBox) {
-		return sandBox[Utils.binstr2char(Utils.bin2str(block[0]) + Utils.bin2str(block[3]))]
-				[Utils.binstr2char(Utils.bin2str(block[1]) + Utils.bin2str(block[2]))];
-	}
-
-	@Override
-	public String decryption(String data, String key) {
-		// TODO Auto-generated method stub
-		return null;
+		return sandBox[Utils.binstr2char(Utils.bin2str(block[0]) + Utils.bin2str(block[3]))][Utils
+				.binstr2char(Utils.bin2str(block[1]) + Utils.bin2str(block[2]))];
 	}
 
 }

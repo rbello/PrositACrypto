@@ -1,7 +1,7 @@
 package fr.exia.a4.utils;
 
-import fr.exia.a4.HillCipher3x3;
 import fr.exia.a4.ROT;
+import fr.exia.a4.SDES_BitAsBoolean;
 import vecmath.Matrix3f;
 
 public class TestCase {
@@ -22,7 +22,7 @@ public class TestCase {
 		}
 		
 		// Check if clearData is equals to decrypted data
-		boolean result = clearData.equals(cipher.decryption(cipherData, key));
+		boolean result = clearData.equals(cipher.decryption(enc, key));
 		System.out.println("Test '" + cipher.getClass().getSimpleName() + "' with key '" + key + "' to decode : " 
 				+ (result ? "SUCCESS" : "FAILURE"));
 		
@@ -42,7 +42,14 @@ public class TestCase {
 		     0,  1,  1,
 			 3,  3,  3
 		);
-		test(new HillCipher3x3(), "abcd", matKey, "LDJCYD");
+		//test(new HillCipher3x3(), "abcd", matKey, "LDJCYD");
+		
+		// S-DES
+		String data = Utils.readAllLocalFile("/fr/exia/a4/data/messageintercepte.txt");
+		System.out.println(data);
+		test(new SDES_BitAsBoolean(), data, "1100101101");
+
+		System.out.println(new SDES_BitAsBoolean().decryption(data, "1100101101"));
 		
 	}
 	
